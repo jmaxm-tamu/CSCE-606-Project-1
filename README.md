@@ -1,3 +1,4 @@
+<!--
 (placeholder info)
 
 The README should contain:
@@ -16,7 +17,7 @@ Documentation will be assessed based on whether:
 - It is present, accurate, and up-to-date
 - The grader can test and run the app using only the instructions provided in the README
 
----
+-->
 
 # SubTrack
 

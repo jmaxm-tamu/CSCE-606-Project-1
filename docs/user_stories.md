@@ -1,3 +1,4 @@
+<!--
 (placeholder info)
 
 The project should include a small but meaningful set of user stories.
@@ -23,3 +24,7 @@ User stories will be assessed based on whether:
 - The stories describe real user-facing behavior
 - The stories are clear, testable, and relevant
 - The implemented app reflects the stories
+
+-->
+
+(Not yet completed)

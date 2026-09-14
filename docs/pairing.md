@@ -1,3 +1,4 @@
+<!--
 (placeholder info)
 
 Objectives
@@ -34,3 +35,7 @@ Pair programming will be assessed based on:
 - The pairing log
 - Evidence of shared ownership of the code
 - Ability of both partners to explain the design and implementation
+
+-->
+
+(Not yet completed)

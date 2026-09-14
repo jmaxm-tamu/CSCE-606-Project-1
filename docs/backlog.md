@@ -1,3 +1,4 @@
+<!--
 (placeholder info)
 
 The backlog should include:
@@ -17,3 +18,7 @@ The backlog will be assessed based on whether:
 - It was updated in timely manner during the project
 - It reflects the implemented work
 - It shows reasonable planning
+
+-->
+
+(Not yet completed)
