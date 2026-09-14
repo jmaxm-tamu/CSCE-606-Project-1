@@ -8,7 +8,7 @@ class StorageManager
     # if saved list exists, load that list
   end
 
-  def convert_list
+  def standardize_list
     standardized_list = []
     @subscription_manager.subscription_list.each do |sub|
       sub_item = [sub.name, sub.cost]
@@ -18,12 +18,12 @@ class StorageManager
   end
 
   def save_list
-    sub_list = convert_list
-    File.write('saved_list.json', sub_list.to_json)
+    sub_list = standardize_list
+    File.write('../data/saved_list.json', sub_list.to_json)
   end
 
   def load_list
-    sub_list = JSON.parse_file('saved_list.json')
+    sub_list = JSON.parse_file('../data/saved_list.json')
     subscription_manager_load = SubscriptionManager.new
 
     sub_list.each do |sub|
