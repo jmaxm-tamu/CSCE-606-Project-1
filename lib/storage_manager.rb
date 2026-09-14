@@ -8,6 +8,8 @@ class StorageManager
     # if saved list exists, load that list
   end
 
+  attr_reader :subscription_manager
+
   def standardize_list
     standardized_list = []
     @subscription_manager.subscription_list.each do |sub|
@@ -26,8 +28,12 @@ class StorageManager
     sub_list = JSON.parse_file('../data/saved_list.json')
     subscription_manager_load = SubscriptionManager.new
 
+    # for each subscription in JSON file, create subscription in SubscriptionManager
     sub_list.each do |sub|
       subscription_manager_load.add_subscription(name, cost)
     end
+
+    # replace initialized SubscriptionManager
+    @subscription_manager = subscription_manager_load
   end
 end

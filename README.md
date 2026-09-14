@@ -24,11 +24,11 @@ SubTrack is a command-line application for managing recurring subscriptions such
 
 ## Installation
 
-(fill)
+Download the above folder.
 
 ## How to Run
 
-(fill)
+Navigate to the folder location, and run "ruby subtrack.rb" in your terminal.
 
 ## How to Test
 
