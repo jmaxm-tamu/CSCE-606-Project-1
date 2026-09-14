@@ -27,4 +27,12 @@ User stories will be assessed based on whether:
 
 -->
 
+## User Stories
+
+Below are some user stories we used to determine the direction of the project.
+
+---
+
+As someone who has a lot of subscriptions, I want a tool to be able to easily review a list of my current subscriptions so that I can more easily track my spending.
+
 (Not yet completed)
