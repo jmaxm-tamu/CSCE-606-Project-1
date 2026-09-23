@@ -82,26 +82,47 @@ def list
   @storage_manager.subscription_manager.list_subscriptions
 end
 
+def save
+  @storage_manager.save_list
+end
+
+def load
+  @storage_manager.load_list
+end
+
 # Begin program
 subtrack_init
 
 loop do
   # When file 
   input = gets.chomp.strip
+
   case input
+
   when 'a', 'add'
     add
+
   when 'l', 'list'
     list
+
   when 'h', 'help'
     help
+
   when 'q', 'quit'
     puts 'Thank you for using SubTrack!'
     puts 'Exiting.'
     break
+
+  when 'save'
+    save
+
+  when 'load'
+    load
+
   else 
     puts 'todo'
   end
+
   puts ''
   puts 'Awaiting next input:'
 end

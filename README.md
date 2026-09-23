@@ -29,7 +29,7 @@ Download the above folder.
 
 ## How to Run
 
-Navigate to the folder location, and run "ruby subtrack.rb" in your terminal.
+Navigate to the root folder (CSCE-606-Project-1), and run "ruby lib/subtrack.rb" in your terminal.
 
 ## How to Test
 

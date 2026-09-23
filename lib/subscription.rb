@@ -1,6 +1,7 @@
 # Date used for renewal date operations, BigDecimal used for cost checks
 require 'date'
 require 'bigdecimal'
+require 'json'
 
 class Subscription
   # Need to add billing frequency (month vs year), category, and renewal 
@@ -28,4 +29,18 @@ class Subscription
   attr_reader :category
   attr_reader :frequency
   attr_reader :renewal
+
+  def to_hash
+    {
+      name: @name,
+      cost: @cost,
+      category: @category,
+      frequency: @frequency,
+      renewal: @renewal
+    }
+  end
+
+  def to_json(*options)
+    to_hash.to_json(*options)
+  end
 end
