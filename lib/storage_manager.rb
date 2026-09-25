@@ -21,13 +21,39 @@ class StorageManager
   end
 =end
 
+  # Function checks current directory to determine filepath for saving and loading data. 
+  # (Assumes user is in correct 'CSCE-606-Project-1' or 'lib' directory to determine correct relative path, otherwise returns empty.)
+  # (Therefore assumes user is running program from correct folder as expected.)
+  def check_dir
+    curr_path = Dir.pwd
+    if curr_path.end_with?('CSCE-606-Project-1')
+      file_path = './data/saved_list.json'
+    elsif curr_path.end_with?('CSCE-606-Project-1/lib') || curr_path.end_with?('CSCE-606-Project-1\lib')
+      file_path = '../data/saved_list.json'
+    else 
+      return ''
+    end
+    return file_path
+  end 
+
   def save_list
+    file_path = check_dir
+
+    # If pwd not valid, handled in subtrack
+    return 1 if file_path == ''
+
     sub_list = @subscription_manager.subscription_list
-    File.write('./data/saved_list.json', sub_list.to_json)
+    File.write(file_path, sub_list.to_json)
+    return 0
   end
 
   def load_list
-    sub_list = JSON.load_file('./data/saved_list.json', symbolize_names: true)
+    file_path = check_dir
+
+    # If pwd not valid, handled in subtrack
+    return 1 if file_path == ''
+
+    sub_list = JSON.load_file(file_path, symbolize_names: true)
     subscription_manager_load = SubscriptionManager.new
 
     # for each subscription in JSON file, create subscription in SubscriptionManager
@@ -37,5 +63,6 @@ class StorageManager
 
     # replace initialized SubscriptionManager
     @subscription_manager = subscription_manager_load
+    return 0
   end
 end

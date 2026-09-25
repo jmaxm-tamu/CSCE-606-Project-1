@@ -83,11 +83,15 @@ def list
 end
 
 def save
-  @storage_manager.save_list
+  save_out = @storage_manager.save_list
+  puts 'Current working directory does not support saving and loading.' if save_out != 0
+  puts 'Please end SubTrack and navigate to correct directory.' if save_out != 0
 end
 
 def load
-  @storage_manager.load_list
+  load_out = @storage_manager.load_list
+  puts 'Current working directory does not support saving and loading.' if load_out != 0
+  puts 'Please end SubTrack and navigate to correct directory.' if load_out != 0
 end
 
 # Begin program
