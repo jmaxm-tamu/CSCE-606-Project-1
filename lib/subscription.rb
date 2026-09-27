@@ -6,22 +6,26 @@ require 'json'
 class Subscription
   # Need to add billing frequency (month vs year), category, and renewal 
   def initialize(name_arg, cost_arg, cat_arg: '', freq_arg: 'month', renew_arg: Date.new(2000-01-01))
-    # Check validity of all inputs
-=begin
-    if name_arg == ''
-      raise ArgumentError, 'Subscription name cannot be empty'
-    elsif cost_arg <= 0
-      raise ArgumentError, 'Cost of subscription must be positive'
-    elsif freq_arg != 'month' && freq_arg != 'year'
-      raise ArgumentError, 'Frequency must be monthly or yearly'
-    # elsif renew_arg -- add later for date 
-    end
-=end
     @name = name_arg
     @cost = cost_arg
     @category = cat_arg
     @frequency = freq_arg
     @renewal = renew_arg
+
+    init_validate
+  end
+
+  def init_validate 
+    # Check validity of all inputs
+
+    if name == ''
+      raise ArgumentError, 'Subscription name cannot be empty'
+    elsif cost <= 0
+      raise ArgumentError, 'Cost of subscription must be positive'
+    elsif frequency != 'month' && frequency != 'year'
+      raise ArgumentError, 'Frequency must be monthly or yearly'
+    # elsif renewal -- add later for date 
+    end
   end
 
   attr_reader :name
@@ -29,6 +33,22 @@ class Subscription
   attr_reader :category
   attr_reader :frequency
   attr_reader :renewal
+
+  def cost=(new_cost)
+    if new_cost <= 0
+      raise ArgumentError, 'Cost of subscription must be positive'
+    else 
+      @cost = new_cost
+    end
+  end
+
+  def yearly_cost
+    if frequency == 'month'
+      return cost * 12
+    else
+      return cost
+    end
+  end
 
   def to_hash
     {

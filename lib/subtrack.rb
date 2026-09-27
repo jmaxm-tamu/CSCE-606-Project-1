@@ -59,7 +59,7 @@ def add
   end
 
   # Run "add" method from storage_manager.rb
-  @storage_manager.subscription_manager.add_subscription(name, cost, cat_arg: category, freq_arg: frequency, renew_arg: Date.parse(renewal))
+  @storage_manager.subscription_manager.add_subscription(name, cost.to_f, cat_arg: category, freq_arg: frequency, renew_arg: Date.parse(renewal))
 end
 
 # Checks if cost is number with at most two decimal points
@@ -80,6 +80,61 @@ end
 def list
   # Basic implementation
   @storage_manager.subscription_manager.list_subscriptions
+end
+
+
+def update
+  puts 'Enter name of subscription to update and new cost.'
+
+  # Subscription name and check
+  puts 'Enter subscription name:'
+  name = gets.chomp.strip
+  if name == ''
+    puts 'Name cannot be empty'
+    return
+  end
+
+  # Cost and check
+  puts 'Enter subscription cost (dollars and cents):'
+  cost = gets.chomp.strip
+  if !cost_check(cost)
+    puts 'Cost must be a number and cannot have more than two decimal places'
+    return
+  end
+
+  result = @storage_manager.subscription_manager.update_subscription(name, cost.to_f)
+
+  # Check if update successful or not
+  if result == 1
+    puts "Subscription named #{name} not found in subscription list."
+  else
+    puts "Subscription cost for %s updated to $%.2f successfully." % [name, cost]
+  end
+end
+
+def delete
+  puts 'Enter name of subscription to be deleted:'
+  name = gets.chomp.strip
+  if name == ''
+    puts 'Name cannot be empty'
+    return
+  end
+
+  puts "Delete subscription named \'#{name}?\' Enter \'y\' or \'yes\' to confirm:"
+  answer = gets.chomp.strip
+  if answer != 'y' && answer != 'yes'
+    puts 'Deletion canceled.'
+    return
+  else
+    result = @storage_manager.subscription_manager.delete_subscription(name)
+  end
+
+  # Check if deletion successful or not
+  if result == 1
+    puts "Subscription named #{name} not found in subscription list."
+  else
+    puts 'Subscription deleted successfully.'
+  end
 end
 
 def save
@@ -111,6 +166,12 @@ loop do
 
   when 'h', 'help'
     help
+
+  when 'update'
+    update
+
+  when 'delete'
+    delete
 
   when 'q', 'quit'
     puts 'Thank you for using SubTrack!'
