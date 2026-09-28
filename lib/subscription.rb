@@ -4,7 +4,6 @@ require 'bigdecimal'
 require 'json'
 
 class Subscription
-  # Need to add billing frequency (month vs year), category, and renewal 
   def initialize(name_arg, cost_arg, cat_arg: '', freq_arg: 'month', renew_arg: Date.new(2000, 1, 1))
     @name = name_arg
     @cost = cost_arg
@@ -24,7 +23,6 @@ class Subscription
       raise ArgumentError, 'Cost of subscription must be positive'
     elsif frequency != 'month' && frequency != 'year'
       raise ArgumentError, 'Frequency must be monthly or yearly'
-    # elsif renewal -- add later for date 
     end
   end
 

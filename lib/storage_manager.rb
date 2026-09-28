@@ -5,22 +5,13 @@ class StorageManager
   def initialize
     @subscription_manager = SubscriptionManager.new
 
-    # if saved list exists, load that list
+    # TODO (US-7): if saved list exists, load that list
   end
 
   attr_reader :subscription_manager
 
-=begin
-  # obsolete method
-  def standardize_list
-    standardized_list = []
-    @subscription_manager.subscription_list.each do |sub|
-      sub_item = [sub.name, sub.cost]
-      standardized_list << sub_item
-    end
-    standardized_list
-  end
-=end
+  # Names skipped by the last load_list because they were already in the file
+  attr_reader :skipped_duplicates
 
   # Function checks current directory to determine filepath for saving and loading data. 
   # (Assumes user is in correct 'CSCE-606-Project-1' or 'lib' directory to determine correct relative path, otherwise returns empty.)
@@ -60,9 +51,16 @@ class StorageManager
 
     sub_list = JSON.load_file(file_path, symbolize_names: true)
     subscription_manager_load = SubscriptionManager.new
+    @skipped_duplicates = []
 
     # for each subscription in JSON file, create subscription in SubscriptionManager
     sub_list.each do |sub|
+      # Skip names already loaded (e.g. a file saved before names had to be unique)
+      if subscription_manager_load.subscription_exists?(sub[:name])
+        @skipped_duplicates << sub[:name]
+        next
+      end
+
       subscription_manager_load.add_subscription(sub[:name], sub[:cost], cat_arg: sub[:category], freq_arg: sub[:frequency], renew_arg: Date.parse(sub[:renewal]))
     end
 

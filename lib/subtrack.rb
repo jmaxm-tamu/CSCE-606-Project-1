@@ -15,6 +15,9 @@ end
 def help
   puts 'To add a subscription, type \'add\'.'
   puts 'To list currently saved subscriptions, type \'list\'.'
+  puts 'To search for a subscription by name, type \'search\'.'
+  puts 'To show subscriptions in one category, type \'filter\'.'
+  puts 'To see your estimated monthly and yearly costs, type \'summary\'.'
   puts 'To change the cost of a subscription, type \'update\'.'
   puts 'To remove a subscription, type \'delete\'.'
   puts 'To save your subscription list to file, type \'save\'.'
@@ -31,6 +34,13 @@ def add
   name = gets.chomp.strip
   if name == ''
     puts 'Name cannot be empty'
+    return
+  end
+
+  # Names must be unique (ignoring case), so check before asking for the other fields
+  existing = @storage_manager.subscription_manager.find_subscription(name)
+  if existing
+    puts "A subscription named '#{existing.name}' already exists. Use 'update' to change it."
     return
   end
 
@@ -62,7 +72,7 @@ def add
     return
   end
 
-  # Run "add" method from storage_manager.rb
+  # Run "add" method from subscription_manager.rb
   @storage_manager.subscription_manager.add_subscription(name, cost.to_f, cat_arg: category, freq_arg: frequency, renew_arg: Date.parse(renewal))
   puts "Subscription #{name} added successfully."
 end
@@ -83,8 +93,54 @@ rescue ArgumentError
 end
 
 def list
-  # Basic implementation
   @storage_manager.subscription_manager.list_subscriptions
+end
+
+def search
+  puts 'Enter subscription name (or part of it) to search for:'
+  query = gets.chomp.strip
+  if query == ''
+    puts 'Search cannot be empty'
+    return
+  end
+
+  manager = @storage_manager.subscription_manager
+  results = manager.search_subscriptions(query)
+  if results.empty?
+    puts 'Subscription not found.'
+  else
+    puts "Search results for '#{query}':"
+    puts manager.format_table(results)
+  end
+end
+
+def summary
+  manager = @storage_manager.subscription_manager
+  if manager.subscription_list.empty?
+    puts 'Subscription list empty.'
+    return
+  end
+
+  puts "Estimated monthly cost: $%.2f" % manager.month_cost
+  puts "Estimated yearly cost:  $%.2f" % manager.year_cost
+end
+
+def filter
+  puts 'Enter category to filter by (\'N/A\' for subscriptions with no category):'
+  category = gets.chomp.strip
+  if category == ''
+    puts 'Category cannot be empty'
+    return
+  end
+
+  manager = @storage_manager.subscription_manager
+  results = manager.filter_by_category(category)
+  if results.empty?
+    puts "No subscriptions found in category '#{category}'."
+  else
+    puts "Subscriptions in category '#{category}':"
+    puts manager.format_table(results)
+  end
 end
 
 
@@ -99,6 +155,13 @@ def update
     return
   end
 
+  # Find the subscription first (ignoring case) so a missing name is reported right away
+  sub = @storage_manager.subscription_manager.find_subscription(name)
+  if sub.nil?
+    puts "Subscription named #{name} not found in subscription list."
+    return
+  end
+
   # Cost and check
   puts 'Enter subscription cost (dollars and cents):'
   cost = gets.chomp.strip
@@ -107,14 +170,8 @@ def update
     return
   end
 
-  result =@storage_manager.subscription_manager.update_subscription(name, cost.to_f)
-
-  # Check if update successful or not
-  if result == 1
-    puts "Subscription named #{name} not found in subscription list."
-  else
-    puts "Subscription cost for %s updated to $%.2f successfully." % [name, cost]
-  end
+  @storage_manager.subscription_manager.update_subscription(sub.name, cost.to_f)
+  puts "Subscription cost for %s updated to $%.2f successfully." % [sub.name, cost]
 end
 
 def delete
@@ -125,21 +182,22 @@ def delete
     return
   end
 
-  puts "Delete subscription named \'#{name}\'? Enter \'y\' or \'yes\' to confirm:"
+  # Find the subscription first (ignoring case) so a missing name is reported right away
+  sub = @storage_manager.subscription_manager.find_subscription(name)
+  if sub.nil?
+    puts "Subscription named #{name} not found in subscription list."
+    return
+  end
+
+  puts "Delete subscription named \'#{sub.name}\'? Enter \'y\' or \'yes\' to confirm:"
   answer = gets.chomp.strip
   if answer != 'y' && answer != 'yes'
     puts 'Deletion canceled.'
     return
-  else
-    result = @storage_manager.subscription_manager.delete_subscription(name)
   end
 
-  # Check if deletion successful or not
-  if result == 1
-    puts "Subscription named #{name} not found in subscription list."
-  else
-    puts 'Subscription deleted successfully.'
-  end
+  @storage_manager.subscription_manager.delete_subscription(sub.name)
+  puts "Subscription #{sub.name} deleted successfully."
 end
 
 def save
@@ -155,6 +213,10 @@ def load
   elsif load_out != 0
     puts 'Current working directory does not support saving and loading.'
     puts 'Please end SubTrack and navigate to correct directory.'
+  else
+    @storage_manager.skipped_duplicates.each do |name|
+      puts "Skipped duplicate subscription '#{name}' in saved file."
+    end
   end
 end
 
@@ -174,6 +236,15 @@ loop do
 
   when 'l', 'list'
     list
+
+  when 'search'
+    search
+
+  when 'filter'
+    filter
+
+  when 'summary'
+    summary
 
   when 'h', 'help'
     help

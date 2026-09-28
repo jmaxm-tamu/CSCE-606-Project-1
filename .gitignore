@@ -1,1 +1,4 @@
 .DS_Store
+
+# Saved subscription list (personal data created by the save command)
+data/
