@@ -1,4 +1,5 @@
 require_relative 'subscription_manager'
+require 'fileutils'
 
 class StorageManager
   def initialize
@@ -43,6 +44,7 @@ class StorageManager
     return 1 if file_path == ''
 
     sub_list = @subscription_manager.subscription_list
+    FileUtils.mkdir_p(File.dirname(file_path))
     File.write(file_path, sub_list.to_json)
     return 0
   end
@@ -53,12 +55,15 @@ class StorageManager
     # If pwd not valid, handled in subtrack
     return 1 if file_path == ''
 
+    # No saved list yet, handled in subtrack
+    return 2 if !File.exist?(file_path)
+
     sub_list = JSON.load_file(file_path, symbolize_names: true)
     subscription_manager_load = SubscriptionManager.new
 
     # for each subscription in JSON file, create subscription in SubscriptionManager
     sub_list.each do |sub|
-      subscription_manager_load.add_subscription(sub[:name], sub[:cost], cat_arg: sub[:category], freq_arg: sub[:frequency], renew_arg: sub[:renewal])
+      subscription_manager_load.add_subscription(sub[:name], sub[:cost], cat_arg: sub[:category], freq_arg: sub[:frequency], renew_arg: Date.parse(sub[:renewal]))
     end
 
     # replace initialized SubscriptionManager

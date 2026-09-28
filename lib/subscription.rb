@@ -5,7 +5,7 @@ require 'json'
 
 class Subscription
   # Need to add billing frequency (month vs year), category, and renewal 
-  def initialize(name_arg, cost_arg, cat_arg: '', freq_arg: 'month', renew_arg: Date.new(2000-01-01))
+  def initialize(name_arg, cost_arg, cat_arg: '', freq_arg: 'month', renew_arg: Date.new(2000, 1, 1))
     @name = name_arg
     @cost = cost_arg
     @category = cat_arg

@@ -15,6 +15,10 @@ end
 def help
   puts 'To add a subscription, type \'add\'.'
   puts 'To list currently saved subscriptions, type \'list\'.'
+  puts 'To change the cost of a subscription, type \'update\'.'
+  puts 'To remove a subscription, type \'delete\'.'
+  puts 'To save your subscription list to file, type \'save\'.'
+  puts 'To load your saved subscription list, type \'load\'.'
   puts 'To exit SubTrack, type \'quit\'.'
 end
 
@@ -34,7 +38,7 @@ def add
   puts 'Enter subscription cost (dollars and cents):'
   cost = gets.chomp.strip
   if !cost_check(cost)
-    puts 'Cost must be a number and cannot have more than two decimal places'
+    puts 'Cost must be a positive number and cannot have more than two decimal places'
     return
   end
 
@@ -60,11 +64,12 @@ def add
 
   # Run "add" method from storage_manager.rb
   @storage_manager.subscription_manager.add_subscription(name, cost.to_f, cat_arg: category, freq_arg: frequency, renew_arg: Date.parse(renewal))
+  puts "Subscription #{name} added successfully."
 end
 
-# Checks if cost is number with at most two decimal points
+# Checks if cost is a positive number with at most two decimal points
 def cost_check(cost)
-  BigDecimal(cost) == BigDecimal(cost).ceil(2)
+  BigDecimal(cost) > 0 && BigDecimal(cost) == BigDecimal(cost).ceil(2)
 rescue ArgumentError
   false
 end
@@ -98,11 +103,11 @@ def update
   puts 'Enter subscription cost (dollars and cents):'
   cost = gets.chomp.strip
   if !cost_check(cost)
-    puts 'Cost must be a number and cannot have more than two decimal places'
+    puts 'Cost must be a positive number and cannot have more than two decimal places'
     return
   end
 
-  result = @storage_manager.subscription_manager.update_subscription(name, cost.to_f)
+  result =@storage_manager.subscription_manager.update_subscription(name, cost.to_f)
 
   # Check if update successful or not
   if result == 1
@@ -120,7 +125,7 @@ def delete
     return
   end
 
-  puts "Delete subscription named \'#{name}?\' Enter \'y\' or \'yes\' to confirm:"
+  puts "Delete subscription named \'#{name}\'? Enter \'y\' or \'yes\' to confirm:"
   answer = gets.chomp.strip
   if answer != 'y' && answer != 'yes'
     puts 'Deletion canceled.'
@@ -145,16 +150,22 @@ end
 
 def load
   load_out = @storage_manager.load_list
-  puts 'Current working directory does not support saving and loading.' if load_out != 0
-  puts 'Please end SubTrack and navigate to correct directory.' if load_out != 0
+  if load_out == 2
+    puts 'No saved subscription list found. Use \'save\' first.'
+  elsif load_out != 0
+    puts 'Current working directory does not support saving and loading.'
+    puts 'Please end SubTrack and navigate to correct directory.'
+  end
 end
 
 # Begin program
 subtrack_init
 
 loop do
-  # When file 
-  input = gets.chomp.strip
+  # Exit cleanly if input ends (e.g. Ctrl-D)
+  line = gets
+  break if line.nil?
+  input = line.chomp.strip
 
   case input
 
@@ -184,8 +195,8 @@ loop do
   when 'load'
     load
 
-  else 
-    puts 'todo'
+  else
+    puts "Unknown command '#{input}'. Type 'h' for help."
   end
 
   puts ''
